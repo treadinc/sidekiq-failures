@@ -37,12 +37,25 @@ class SidekiqPost63
   end
 end
 
+class Sidekiq8
+  def new_processor(boss)
+    config = Sidekiq::Config.new
+    config.queues = ['default']
+    # config.fetch = Sidekiq::BasicFetch.new(config.default_capsule)
+    config.error_handlers << Sidekiq::Config::ERROR_HANDLER
+    ::Sidekiq::Processor.new(config.default_capsule) { |processor, reason = nil| }
+  end
+end
+
 module Sidekiq
   module Failures
     describe "Middleware" do
       def new_provider
         version = Gem::Version.new(Sidekiq::VERSION)
-        if version >= Gem::Version.new('6.4.0')
+
+        if version >= Gem::Version.new('8.0.0')
+          Sidekiq8
+        elsif version >= Gem::Version.new('6.4.0')
           SidekiqPost63
         elsif version >= Gem::Version.new('6.0')
           SidekiqPre63
