@@ -21,31 +21,31 @@ module Sidekiq
         app.helpers Helpers
 
         app.get "/failures" do
-          @count = (params[:count] || 25).to_i
-          (@current_page, @total_size, @failures) = page(LIST_KEY, params[:page], @count, :reverse => true)
+          @count = (url_params('count') || 25).to_i
+          (@current_page, @total_size, @failures) = page(LIST_KEY, url_params('page'), @count, :reverse => true)
           @failures = @failures.map {|msg, score| Sidekiq::SortedEntry.new(nil, score, msg) }
 
           render(:erb, File.read(File.join(view_path, "failures.erb")))
         end
 
         app.get "/failures/:key" do
-          halt 404 unless params['key']
+          halt 404 unless url_params('key')
 
-          @failure = FailureSet.new.fetch(*parse_params(params['key'])).first
+          @failure = FailureSet.new.fetch(*parse_params(url_params('key'))).first
           redirect "#{root_path}failures" if @failure.nil?
           render(:erb, File.read(File.join(view_path, "failure.erb")))
         end
 
         app.post "/failures" do
-          halt 404 unless params['key']
+          halt 404 unless url_params('key')
 
-          params['key'].each do |key|
+          url_params('key').each do |key|
             job = FailureSet.new.fetch(*parse_params(key)).first
             next unless job
 
-            if params['retry']
+            if url_params('retry')
               job.retry_failure
-            elsif params['delete']
+            elsif url_params('delete')
               job.delete
             end
           end
@@ -54,13 +54,13 @@ module Sidekiq
         end
 
         app.post "/failures/:key" do
-          halt 404 unless params['key']
+          halt 404 unless url_params('key')
 
-          job = FailureSet.new.fetch(*parse_params(params['key'])).first
+          job = FailureSet.new.fetch(*parse_params(url_params('key'))).first
           if job
-            if params['retry']
+            if url_params('retry')
               job.retry_failure
-            elsif params['delete']
+            elsif url_params('delete')
               job.delete
             end
           end
@@ -87,7 +87,7 @@ module Sidekiq
         end
 
         app.post '/filter/failures' do
-          @failures = Sidekiq::Failures::FailureSet.new.scan("*#{params[:substr]}*")
+          @failures = Sidekiq::Failures::FailureSet.new.scan("*#{url_params('substr')}*")
           @current_page = 1
           @count = @total_size = @failures.count
           render(:erb, File.read(File.join(view_path, "failures.erb")))

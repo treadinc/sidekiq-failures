@@ -112,7 +112,7 @@ module Sidekiq
         assert_equal 0, failures_count
 
         assert_raises TestException do
-          @processor.process(msg)
+          @processor.send :process, msg
         end
 
         assert_equal 1, failures_count
@@ -125,7 +125,7 @@ module Sidekiq
         assert_equal 0, failures_count
 
         assert_raises TestException do
-          @processor.process(msg)
+          @processor.send :process, msg
         end
 
         assert_equal 1, failures_count
@@ -137,7 +137,7 @@ module Sidekiq
 
         assert_equal 0, failures_count
 
-        @processor.process(msg)
+        @processor.send :process, msg
 
         assert_equal 0, failures_count
         assert_equal 1, $invokes
@@ -149,7 +149,7 @@ module Sidekiq
         assert_equal 0, failures_count
 
         assert_raises TestException do
-          @processor.process(msg)
+          @processor.send :process, msg
         end
 
         assert_equal 0, failures_count
@@ -164,7 +164,7 @@ module Sidekiq
         assert_equal 0, failures_count
 
         assert_raises TestException do
-          @processor.process(msg)
+          @processor.send :process, msg
         end
 
         assert_equal 0, failures_count
@@ -177,7 +177,7 @@ module Sidekiq
         assert_equal 0, failures_count
 
         assert_raises TestException do
-          @processor.process(msg)
+          @processor.send :process, msg
         end
 
         assert_equal 0, failures_count
@@ -190,7 +190,7 @@ module Sidekiq
         assert_equal 0, failures_count
 
         assert_raises TestException do
-          @processor.process(msg)
+          @processor.send :process, msg
         end
 
         assert_equal 1, failures_count
@@ -203,7 +203,7 @@ module Sidekiq
         assert_equal 0, failures_count
 
         assert_raises TestException do
-          @processor.process(msg)
+          @processor.send :process, msg
         end
 
         assert_equal 1, failures_count
@@ -218,7 +218,7 @@ module Sidekiq
         assert_equal 0, failures_count
 
         assert_raises TestException do
-          @processor.process(msg)
+          @processor.send :process, msg
         end
 
         assert_equal 1, failures_count
@@ -233,7 +233,7 @@ module Sidekiq
         assert_equal 0, failures_count
 
         assert_raises TestException do
-          @processor.process(msg)
+          @processor.send :process, msg
         end
 
         assert_equal 1, failures_count
@@ -253,7 +253,7 @@ module Sidekiq
           processor = @provider.new_processor(boss)
 
           assert_raises TestException do
-            processor.process(msg)
+            processor.send :process, msg
           end
 
           boss.verify
@@ -274,7 +274,7 @@ module Sidekiq
         assert_equal 0, Sidekiq::Failures.count
 
         assert_raises TestException do
-          @processor.process(msg)
+          @processor.send :process, msg
         end
 
         assert_equal 1, Sidekiq::Failures.count
